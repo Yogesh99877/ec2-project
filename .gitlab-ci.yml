@@ -14,6 +14,15 @@ build:
   image: docker:20.10
   services:
     - docker:20.10-dind
+
+  before_script:
+  - mkdir -p ~/.ssh
+  - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - eval $(ssh-agent -s)
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
   script:
     - docker build -t $IMAGE .
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
